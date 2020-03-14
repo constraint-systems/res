@@ -178,6 +178,8 @@ let Home = () => {
     tiles: null,
   })
 
+  let file_input = useRef(null)
+
   let slider_click_ref = useRef(null)
   let slider_touch_mode = useRef(false)
 
@@ -201,7 +203,7 @@ let Home = () => {
 
     let img = document.createElement('img')
     img.onload = () => {
-      let adj_width = Math.min(img.width, window.innerWidth - sp * 2)
+      let adj_width = Math.min(img.width, window.innerWidth - sp * 2.5)
       let dsp = sp
       let snapw = Math.round(adj_width / dsp) * dsp
       let snapr = snapw / img.width
@@ -466,15 +468,7 @@ let Home = () => {
     let km = km_ref.current
 
     if (key === 'o') {
-      let input = document.createElement('input')
-      input.setAttribute('type', 'file')
-      input.dispatchEvent(
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-          view: window,
-        })
-      )
+      let input = file_input.current
       function handleChange(e) {
         let files = ''
         for (let item of this.files) {
@@ -490,6 +484,14 @@ let Home = () => {
         this.removeEventListener('change', handleChange)
       }
       input.addEventListener('change', handleChange)
+
+      input.dispatchEvent(
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        })
+      )
     } else if (key === 'p') {
       let link = document.createElement('a')
 
@@ -673,6 +675,7 @@ let Home = () => {
         }}
       >
         {debug !== null ? <div>{debug}</div> : null}
+        <input type="file" ref={file_input} />
         <div
           className="no-select"
           style={{ paddingLeft: sp, paddingRight: sp }}

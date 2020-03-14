@@ -11,10 +11,17 @@ function fill(rgb) {
 }
 
 let Line = () => <div style={{ height: sp, width: '100%' }} />
+
 let Space = () => <div style={{ width: sp / 2 }} />
 
-let Button = ({ label, clearer, trigger, text_label, custom_style }) => {
-  let repeat_ref = useRef(null)
+let Button = ({
+  label,
+  clearer,
+  trigger,
+  text_label,
+  press_gates,
+  custom_style,
+}) => {
   let button_style = {
     fontFamily: 'inherit',
     fontSize: 'inherit',
@@ -26,6 +33,61 @@ let Button = ({ label, clearer, trigger, text_label, custom_style }) => {
     background: 'black',
     color: 'white',
     display: 'block',
+    userSelect: 'none',
+  }
+  if (custom_style !== undefined) {
+    button_style = Object.assign(button_style, custom_style)
+  }
+  return (
+    <div style={{ display: 'flex' }}>
+      <button
+        style={button_style}
+        onMouseDown={e => {
+          trigger()
+        }}
+      >
+        {label}
+      </button>
+      {text_label !== undefined ? (
+        <div
+          style={{ display: 'flex', cursor: 'default', userSelect: 'none' }}
+          onMouseDown={e => {
+            trigger()
+          }}
+        >
+          <Space />
+          <div>{text_label}</div>
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
+let RepeatButton = ({
+  label,
+  clearer,
+  trigger,
+  text_label,
+  press_gates,
+  custom_style,
+}) => {
+  let repeat_ref = useRef(null)
+  let start_gate = useRef(false)
+
+  let touch_mode = useRef(false)
+
+  let button_style = {
+    fontFamily: 'inherit',
+    fontSize: 'inherit',
+    lineHeight: 'inherit',
+    border: 'none',
+    padding: 0,
+    margin: 0,
+    width: sp,
+    background: 'black',
+    color: 'white',
+    display: 'block',
+    userSelect: 'none',
   }
   if (custom_style !== undefined) {
     button_style = Object.assign(button_style, custom_style)
@@ -35,26 +97,42 @@ let Button = ({ label, clearer, trigger, text_label, custom_style }) => {
       <button
         style={button_style}
         onTouchStart={e => {
-          repeat_ref.current = setInterval(() => {
-            trigger()
-          }, 200)
-          clearer(repeat_ref.current)
+          touch_mode.current = true
+          press_gates.current = true
           trigger()
-          e.preventDefault()
+          setTimeout(() => {
+            if (press_gates.current) {
+              repeat_ref.current = setInterval(() => {
+                trigger()
+              }, 100)
+              clearer(repeat_ref.current)
+            }
+          }, 400)
         }}
-        ontouchEnd={e => {
-          clearInterval(repeat_ref.current)
+        onTouchEnd={e => {
+          setTimeout(() => {
+            touch_mode.current = false
+          }, 400)
           e.preventDefault()
         }}
         onMouseDown={e => {
-          repeat_ref.current = setInterval(() => {
+          if (!touch_mode.current) {
+            press_gates.current = true
             trigger()
-          }, 200)
-          clearer(repeat_ref.current)
-          trigger()
+            setTimeout(() => {
+              if (press_gates.current) {
+                repeat_ref.current = setInterval(() => {
+                  trigger()
+                }, 100)
+                clearer(repeat_ref.current)
+              }
+            }, 400)
+          }
         }}
         onMouseUp={e => {
-          clearInterval(repeat_ref.current)
+          if (!touch_mode.current) {
+            clearInterval(repeat_ref.current)
+          }
         }}
       >
         {label}
@@ -91,6 +169,8 @@ let Home = () => {
   let rpref = useRef(null)
   let qref = useRef(null)
 
+  let press_gates = useRef(false)
+
   let dim_ref = useRef(null)
   let reduced_ref = useRef(null)
 
@@ -101,6 +181,7 @@ let Home = () => {
   })
 
   let slider_click_ref = useRef(null)
+  let slider_touch_mode = useRef(false)
 
   let ti_ref = useRef(null)
 
@@ -120,7 +201,7 @@ let Home = () => {
 
     let img = document.createElement('img')
     img.onload = () => {
-      let adj_width = Math.min(img.width, window.innerWidth - sp * 3)
+      let adj_width = Math.min(img.width, window.innerWidth - sp * 2)
       let dsp = sp
       let snapw = Math.round(adj_width / dsp) * dsp
       let snapr = snapw / img.width
@@ -309,9 +390,9 @@ let Home = () => {
     loadImage('mrrobot2.jpg')
   }, [])
 
-  function clickSetThreshold(e) {
+  function clickSetThreshold(x) {
     let rect = ti_ref.current.getBoundingClientRect()
-    let x = e.clientX - rect.left
+    x = x - rect.left
     let percent = x / ti_ref.current.width
     let { cells, threshold } = state_ref.current
     let new_thresh =
@@ -468,8 +549,10 @@ let Home = () => {
   }
 
   function handleMouseMove(e) {
-    if (slider_click_ref.current) {
-      clickSetThreshold(e)
+    if (!slider_touch_mode.current) {
+      if (slider_click_ref.current) {
+        clickSetThreshold(e.clientX)
+      }
     }
   }
 
@@ -477,16 +560,26 @@ let Home = () => {
     clear_ref.current.push(id)
   }
 
-  function handleMouseUp(e) {
-    if (slider_click_ref.current) {
-      slider_click_ref.current = false
-      clickSetThreshold(e)
-    }
+  function clearRepeatIntervals() {
     for (let i = 0; i < clear_ref.current.length; i++) {
       let item = clear_ref.current[i]
       clearInterval(item)
     }
     clear_ref.current = []
+  }
+
+  function clearPressGates() {
+    press_gates.current = false
+  }
+
+  function handleMouseUp(e) {
+    if (!slider_touch_mode.current) {
+      if (slider_click_ref.current) {
+        slider_click_ref.current = false
+        clickSetThreshold(e.clientX)
+      }
+    }
+    clearRepeatIntervals()
   }
 
   function onDrop(e) {
@@ -517,6 +610,20 @@ let Home = () => {
     }
   }
 
+  function handleTouchMove(e) {
+    if (slider_touch_mode.current) {
+      if (slider_click_ref.current) {
+        clickSetThreshold(e.changedTouches[0].clientX)
+      }
+    }
+  }
+
+  function handleTouchEnd(e) {
+    // touch end doesn't seem to have client x
+    clearPressGates()
+    clearRepeatIntervals()
+  }
+
   useEffect(() => {
     window.addEventListener('keydown', downHandler)
     window.addEventListener('keyup', upHandler)
@@ -525,6 +632,8 @@ let Home = () => {
     window.addEventListener('paste', onPaste, false)
     window.addEventListener('dragover', onDrag, false)
     window.addEventListener('drop', onDrop, false)
+    window.addEventListener('touchend', handleTouchEnd, false)
+    window.addEventListener('touchmove', handleTouchMove, false)
     return () => {
       window.removeEventListener('keydown', downHandler)
       window.removeEventListener('keyup', upHandler)
@@ -533,6 +642,8 @@ let Home = () => {
       window.removeEventListener('paste', onPaste, false)
       window.removeEventListener('dragover', onDrag, false)
       window.removeEventListener('drop', onDrop, false)
+      window.removeEventListener('touchend', handleTouchEnd, false)
+      window.removeEventListener('touchmove', handleTouchMove, false)
     }
   }, [])
 
@@ -561,6 +672,7 @@ let Home = () => {
           <div style={{ display: 'flex' }}>
             <Button
               label="o"
+              press_gates={press_gates}
               text_label="Load image (or paste or drop)"
               clearer={clearer}
               trigger={() => {
@@ -570,6 +682,7 @@ let Home = () => {
             <Space />
             <Button
               label="p"
+              press_gates={press_gates}
               text_label="Save result as png"
               clearer={clearer}
               trigger={() => {
@@ -600,13 +713,27 @@ let Home = () => {
                 cursor: 'crosshair',
                 userSelect: 'none',
               }}
-              onMouseDown={e => {
+              onTouchStart={e => {
                 slider_click_ref.current = true
-                clickSetThreshold(e)
+                slider_touch_mode.current = true
+                clickSetThreshold(e.changedTouches[0].clientX)
+              }}
+              onTouchEnd={e => {
+                setTimeout(() => {
+                  slider_click_ref.current = false
+                  slider_touch_mode.current = false
+                }, 400)
+              }}
+              onMouseDown={e => {
+                if (!slider_touch_mode) {
+                  slider_click_ref.current = true
+                  clickSetThreshold(e.clientX)
+                }
               }}
             />
-            <Button
+            <RepeatButton
               label="h"
+              press_gates={press_gates}
               custom_style={{ height: sp * 2, width: sp * 2 }}
               clearer={clearer}
               trigger={() => {
@@ -622,8 +749,9 @@ let Home = () => {
                 lineHeight: sp * 2 + 'px',
               }}
             ></div>
-            <Button
+            <RepeatButton
               label="l"
+              press_gates={press_gates}
               custom_style={{ height: sp * 2, width: sp * 2 }}
               clearer={clearer}
               trigger={() => {

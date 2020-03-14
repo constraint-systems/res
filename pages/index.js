@@ -187,6 +187,8 @@ let Home = () => {
 
   let clear_ref = useRef([])
 
+  let [debug, setDebug] = useState(null)
+
   function loadImage(src) {
     let c = cref.current
     let cx = c.getContext('2d')
@@ -474,13 +476,17 @@ let Home = () => {
         })
       )
       function handleChange(e) {
+        let files = ''
         for (let item of this.files) {
+          console.log(item)
+          files += item.name + '.' + item.type
           if (item.type.indexOf('image') < 0) {
             continue
           }
           let src = URL.createObjectURL(item)
           loadImage(src)
         }
+        setDebug(files)
         this.removeEventListener('change', handleChange)
       }
       input.addEventListener('change', handleChange)
@@ -666,6 +672,7 @@ let Home = () => {
           marginRight: 'auto',
         }}
       >
+        {debug !== null ? <div>{debug}</div> : null}
         <div
           className="no-select"
           style={{ paddingLeft: sp, paddingRight: sp }}

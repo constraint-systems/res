@@ -203,7 +203,10 @@ let Home = () => {
 
     let img = document.createElement('img')
     img.onload = () => {
-      let adj_width = Math.min(img.width, window.innerWidth - sp * 2.5)
+      let adj_width = Math.min(
+        img.width,
+        Math.floor(window.innerWidth - sp * 2)
+      )
       let dsp = sp
       let snapw = Math.round(adj_width / dsp) * dsp
       let snapr = snapw / img.width
@@ -675,7 +678,7 @@ let Home = () => {
         }}
       >
         {debug !== null ? <div>{debug}</div> : null}
-        <input type="file" ref={file_input} />
+        <input type="file" ref={file_input} style={{ display: 'none' }} />
         <div
           className="no-select"
           style={{ paddingLeft: sp, paddingRight: sp }}

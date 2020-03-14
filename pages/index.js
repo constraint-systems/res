@@ -189,8 +189,6 @@ let Home = () => {
 
   let clear_ref = useRef([])
 
-  let [debug, setDebug] = useState(null)
-
   function loadImage(src) {
     let c = cref.current
     let cx = c.getContext('2d')
@@ -205,7 +203,7 @@ let Home = () => {
     img.onload = () => {
       let adj_width = Math.min(
         img.width,
-        Math.floor(window.innerWidth - sp * 2)
+        Math.floor(window.innerWidth - sp * 2) - 2
       )
       let dsp = sp
       let snapw = Math.round(adj_width / dsp) * dsp
@@ -483,7 +481,6 @@ let Home = () => {
           let src = URL.createObjectURL(item)
           loadImage(src)
         }
-        setDebug(files)
         this.removeEventListener('change', handleChange)
       }
       input.addEventListener('change', handleChange)
@@ -677,7 +674,6 @@ let Home = () => {
           marginRight: 'auto',
         }}
       >
-        {debug !== null ? <div>{debug}</div> : null}
         <input type="file" ref={file_input} style={{ display: 'none' }} />
         <div
           className="no-select"

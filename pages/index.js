@@ -635,7 +635,7 @@ let Home = () => {
     window.addEventListener('dragover', onDrag, false)
     window.addEventListener('drop', onDrop, false)
     window.addEventListener('touchend', handleTouchEnd, false)
-    window.addEventListener('touchmove', handleTouchMove, false)
+    window.addEventListener('touchmove', handleTouchMove, { passive: false })
     return () => {
       window.removeEventListener('keydown', downHandler)
       window.removeEventListener('keyup', upHandler)
@@ -669,7 +669,7 @@ let Home = () => {
           marginRight: 'auto',
         }}
       >
-        <div style={{ paddingLeft: sp, paddingRight: sp }}>
+        <div style={{ paddingLeft: sp, paddingRight: sp, userSelect: 'none' }}>
           <Line />
           <div style={{ display: 'flex' }}>
             <Button
@@ -750,6 +750,7 @@ let Home = () => {
                 position: 'relative',
                 pointerEvents: 'none',
                 lineHeight: sp * 2 + 'px',
+                userSelect: 'none',
               }}
             ></div>
             <RepeatButton

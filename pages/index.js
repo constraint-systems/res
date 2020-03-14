@@ -30,6 +30,7 @@ let Button = ({
     padding: 0,
     margin: 0,
     width: sp,
+    userSelect: 'none',
     background: 'black',
     color: 'white',
     display: 'block',
@@ -77,6 +78,7 @@ let RepeatButton = ({
   let touch_mode = useRef(false)
 
   let button_style = {
+    userSelect: 'none',
     fontFamily: 'inherit',
     fontSize: 'inherit',
     lineHeight: 'inherit',
@@ -87,7 +89,6 @@ let RepeatButton = ({
     background: 'black',
     color: 'white',
     display: 'block',
-    userSelect: 'none',
   }
   if (custom_style !== undefined) {
     button_style = Object.assign(button_style, custom_style)
@@ -874,6 +875,9 @@ let Home = () => {
         }
         .threshold_marker div {
           background: #bbb;
+        }
+        button {
+          user-select: none;
         }
       `}</style>
     </div>

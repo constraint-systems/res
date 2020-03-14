@@ -30,11 +30,9 @@ let Button = ({
     padding: 0,
     margin: 0,
     width: sp,
-    userSelect: 'none',
     background: 'black',
     color: 'white',
     display: 'block',
-    userSelect: 'none',
   }
   if (custom_style !== undefined) {
     button_style = Object.assign(button_style, custom_style)
@@ -51,7 +49,7 @@ let Button = ({
       </button>
       {text_label !== undefined ? (
         <div
-          style={{ display: 'flex', cursor: 'default', userSelect: 'none' }}
+          style={{ display: 'flex', cursor: 'default' }}
           onMouseDown={e => {
             trigger()
           }}
@@ -78,7 +76,6 @@ let RepeatButton = ({
   let touch_mode = useRef(false)
 
   let button_style = {
-    userSelect: 'none',
     fontFamily: 'inherit',
     fontSize: 'inherit',
     lineHeight: 'inherit',
@@ -140,7 +137,7 @@ let RepeatButton = ({
       </button>
       {text_label !== undefined ? (
         <div
-          style={{ display: 'flex', cursor: 'default', userSelect: 'none' }}
+          style={{ display: 'flex', cursor: 'default' }}
           onMouseDown={e => {
             repeat_ref.current = setInterval(() => {
               trigger()
@@ -631,21 +628,21 @@ let Home = () => {
     window.addEventListener('keyup', upHandler)
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('mouseup', handleMouseUp)
-    window.addEventListener('paste', onPaste, false)
-    window.addEventListener('dragover', onDrag, false)
-    window.addEventListener('drop', onDrop, false)
-    window.addEventListener('touchend', handleTouchEnd, false)
+    window.addEventListener('paste', onPaste)
+    window.addEventListener('dragover', onDrag)
+    window.addEventListener('drop', onDrop)
+    window.addEventListener('touchend', handleTouchEnd)
     window.addEventListener('touchmove', handleTouchMove, { passive: false })
     return () => {
       window.removeEventListener('keydown', downHandler)
       window.removeEventListener('keyup', upHandler)
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
-      window.removeEventListener('paste', onPaste, false)
-      window.removeEventListener('dragover', onDrag, false)
-      window.removeEventListener('drop', onDrop, false)
-      window.removeEventListener('touchend', handleTouchEnd, false)
-      window.removeEventListener('touchmove', handleTouchMove, false)
+      window.removeEventListener('paste', onPaste)
+      window.removeEventListener('dragover', onDrag)
+      window.removeEventListener('drop', onDrop)
+      window.removeEventListener('touchend', handleTouchEnd)
+      window.removeEventListener('touchmove', handleTouchMove)
     }
   }, [])
 
@@ -669,7 +666,10 @@ let Home = () => {
           marginRight: 'auto',
         }}
       >
-        <div style={{ paddingLeft: sp, paddingRight: sp, userSelect: 'none' }}>
+        <div
+          className="no-select"
+          style={{ paddingLeft: sp, paddingRight: sp }}
+        >
           <Line />
           <div style={{ display: 'flex' }}>
             <Button
@@ -702,7 +702,6 @@ let Home = () => {
               textAlign: 'center',
               width: '100%',
               position: 'relative',
-              userSelect: 'none',
             }}
           >
             <canvas
@@ -714,7 +713,6 @@ let Home = () => {
                 left: sp * 2,
                 top: 0,
                 cursor: 'crosshair',
-                userSelect: 'none',
               }}
               onTouchStart={e => {
                 slider_click_ref.current = true
@@ -750,7 +748,6 @@ let Home = () => {
                 position: 'relative',
                 pointerEvents: 'none',
                 lineHeight: sp * 2 + 'px',
-                userSelect: 'none',
               }}
             ></div>
             <RepeatButton
@@ -880,6 +877,9 @@ let Home = () => {
           background: #bbb;
         }
         button {
+          user-select: none;
+        }
+        .no-select {
           user-select: none;
         }
       `}</style>

@@ -615,6 +615,7 @@ let Home = () => {
     if (slider_touch_mode.current) {
       if (slider_click_ref.current) {
         clickSetThreshold(e.changedTouches[0].clientX)
+        e.preventDefault()
       }
     }
   }
@@ -701,6 +702,7 @@ let Home = () => {
               textAlign: 'center',
               width: '100%',
               position: 'relative',
+              userSelect: 'none',
             }}
           >
             <canvas
@@ -726,7 +728,7 @@ let Home = () => {
                 }, 400)
               }}
               onMouseDown={e => {
-                if (!slider_touch_mode) {
+                if (!slider_touch_mode.current) {
                   slider_click_ref.current = true
                   clickSetThreshold(e.clientX)
                 }

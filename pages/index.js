@@ -203,7 +203,7 @@ let Home = () => {
     img.onload = () => {
       let adj_width = Math.min(
         img.width,
-        Math.floor(window.innerWidth - sp * 2) - 2
+        Math.floor(window.innerWidth - sp * 2) - sp / 2
       )
       let dsp = sp
       let snapw = Math.round(adj_width / dsp) * dsp

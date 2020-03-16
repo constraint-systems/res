@@ -659,7 +659,7 @@ let Home = () => {
   let title = 'Res'
   let description =
     'Selectively de-res image pixels ranked using a compression algorithm.'
-  let share_img_url = ''
+  let share_img_url = 'https://res.constraint.systems/res.png'
   let og_url = 'https://res.constraint.systems'
 
   return (

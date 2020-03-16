@@ -467,6 +467,12 @@ let Home = () => {
 
   function keyAction(key, event) {
     let km = km_ref.current
+    if (event === null) {
+      event = { shiftKey: false }
+    }
+
+    let shift = event.shiftKey
+    key = key.toLowerCase()
 
     if (key === 'o') {
       let input = file_input.current
@@ -521,25 +527,20 @@ let Home = () => {
       })
     }
 
-    if (key === 'l') {
+    if (key === 'l' || key === 'arrowright') {
+      let move = 10
+      if (shift) move = 1
       state_ref.current.threshold = Math.max(
         0,
-        state_ref.current.threshold - 10
+        state_ref.current.threshold - move
       )
       render()
-    } else if (key === 'h') {
+    } else if (key === 'h' || key === 'arrowleft') {
+      let move = 10
+      if (shift) move = 1
       state_ref.current.threshold = Math.min(
         state_ref.current.cells,
-        state_ref.current.threshold + 10
-      )
-      render()
-    } else if (key === 'L') {
-      state_ref.current.threshold = Math.max(0, state_ref.current.threshold - 1)
-      render()
-    } else if (key === 'H') {
-      state_ref.current.threshold = Math.min(
-        state_ref.current.cells,
-        state_ref.current.threshold + 1
+        state_ref.current.threshold + move
       )
       render()
     }
@@ -585,6 +586,7 @@ let Home = () => {
         clickSetThreshold(e.clientX)
       }
     }
+    clearPressGates()
     clearRepeatIntervals()
   }
 
@@ -654,16 +656,30 @@ let Home = () => {
     }
   }, [])
 
+  let title = 'Res'
+  let description =
+    'Selectively de-res image pixels ranked using a compression algorithm.'
+  let share_img_url = ''
+  let og_url = 'https://res.constraint.systems'
+
   return (
     <div>
       <Head>
-        <title>Res</title>
-        <link
-          id="favicon_link"
-          rel="shortcut icon"
-          type="image/png"
-          href={favicon}
+        <meta charset="UTF-8" />
+        <title>{title}</title>
+        <link rel="shortcut icon" href={favicon} />
+        <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1,shrink-to-fit=no"
         />
+        <meta name="theme-color" content="#000000" />
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={share_img_url} />
+        <meta property="og:url" content={og_url} />
+        <meta name="twitter:card" content="summary_large_image" />
       </Head>
 
       <div
@@ -847,7 +863,7 @@ let Home = () => {
             <a href="https://constraint.systems">constraint.systems</a>
           </div>
           <div>
-            <a href="#">View source</a>
+            <a href="https://github.com/constraint-systems/res">View source</a>
           </div>
         </div>
         <Line />

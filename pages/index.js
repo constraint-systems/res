@@ -306,6 +306,7 @@ let Home = () => {
 
       tiles = _.sortBy(tiles, 'c').reverse()
 
+      // draw tiles
       let q = qref.current
       q.innerHTML = ''
       for (let i = 0; i < tiles.length; i++) {
@@ -372,7 +373,7 @@ let Home = () => {
       }
       setFavicon(f.toDataURL())
 
-      state.threshold = 120
+      state.threshold = 400
 
       render()
     }
